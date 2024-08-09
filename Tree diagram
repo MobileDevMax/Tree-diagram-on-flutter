@@ -1,0 +1,100 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Tree Diagram',
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Tree Diagram'),
+        ),
+        body: Center(
+          child: TreeDiagram(),
+        ),
+      ),
+    );
+  }
+}
+
+class TreeDiagram extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      size: Size(300, 400),
+      painter: TreeDiagramPainter(),
+    );
+  }
+}
+
+class TreeDiagramPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final Paint paintNode = Paint()
+      ..color = Colors.blue
+      ..style = PaintingStyle.fill;
+
+    final Paint paintLine = Paint()
+      ..color = Colors.black
+      ..strokeWidth = 2.0;
+
+    // We set the positions of the nodes
+    Offset root = Offset(size.width / 2, 30);
+    Offset child1 = Offset(size.width / 2 - 70, 150);
+    Offset child2 = Offset(size.width / 2 + 70, 150);
+    Offset grandchild1 = Offset(size.width / 2 - 100, 250);
+    Offset grandchild2 = Offset(size.width / 2 - 40, 250);
+    Offset grandchild3 = Offset(size.width / 2 + 40, 250);
+    Offset grandchild4 = Offset(size.width / 2 + 100, 250);
+
+    // Draw lines (branches)
+    canvas.drawLine(root, child1, paintLine);
+    canvas.drawLine(root, child2, paintLine);
+    canvas.drawLine(child1, grandchild1, paintLine);
+    canvas.drawLine(child1, grandchild2, paintLine);
+    canvas.drawLine(child2, grandchild3, paintLine);
+    canvas.drawLine(child2, grandchild4, paintLine);
+
+    // Draw knots (circles)
+    canvas.drawCircle(root, 25, paintNode);
+    canvas.drawCircle(child1, 25, paintNode);
+    canvas.drawCircle(child2, 25, paintNode);
+    canvas.drawCircle(grandchild1, 25, paintNode);
+    canvas.drawCircle(grandchild2, 25, paintNode);
+    canvas.drawCircle(grandchild3, 25, paintNode);
+    canvas.drawCircle(grandchild4, 25, paintNode);
+
+    // Let's add some text
+    final TextPainter textPainter = TextPainter(
+      text: TextSpan(
+        text: 'Root',
+        style: TextStyle(color: Colors.white),
+      ),
+      textDirection: TextDirection.ltr,
+    );
+    textPainter.layout();
+    textPainter.paint(canvas, Offset(root.dx - textPainter.width / 2, root.dy - textPainter.height / 2));
+
+    // Text for child nodes
+    List<String> childNames = ['Child 1', 'Child 2', 'Gchild 1', 'Gchild 2', 'Gchild 3', 'Gchild 4'];
+    List<Offset> childPositions = [child1, child2, grandchild1, grandchild2, grandchild3, grandchild4];
+
+    for (int i = 0; i < childNames.length; i++) {
+      textPainter.text = TextSpan(
+        text: childNames[i],
+        style: TextStyle(color: Colors.white),
+      );
+      textPainter.layout();
+      textPainter.paint(canvas, Offset(childPositions[i].dx - textPainter.width / 2, childPositions[i].dy - textPainter.height / 2));
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return false;
+  }
+}
